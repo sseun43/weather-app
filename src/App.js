@@ -38,17 +38,17 @@ class App extends Component {
   }
 
   getDayNameFromUnixTime(unixTime){
-      var reformedUnixTime = Number(unixTime + '000');
-      var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      var d = new Date(reformedUnixTime);
-      var dayName = days[d.getDay()];
+      const reformedUnixTime = Number(unixTime + '000');
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const d = new Date(reformedUnixTime);
+      const dayName = days[d.getDay()];
       return dayName.slice(0,3);
   }
 
   loadWeather(pos) {
-    var position = pos.coords.latitude + "," + pos.coords.longitude;
+    const position = pos.coords.latitude + "," + pos.coords.longitude;
     this.state.socket.emit('latestPosition',position);
-    var localAddress = "http://localhost:4001/getWeather/" + position;
+    const localAddress = "http://localhost:4001/getWeather/" + position;
     fetch(localAddress)
         .then((response) => {
           return response.json();
@@ -77,7 +77,7 @@ class App extends Component {
   }
 
   getBackGroundImage(condition){
-    var imageUrlMapping = {
+    const imageUrlMapping = {
       'clear-day':'url(https://upload.wikimedia.org/wikipedia/commons/4/42/Southern_Helsinki_panorama_2011-06-28_1.jpg)',
       'clear-night':'url(https://upload.wikimedia.org/wikipedia/commons/3/3a/Sunset_in_Coquitlam.jpg)',
       'rain':'url(https://upload.wikimedia.org/wikipedia/commons/6/65/Black_Rain_Clouds.jpg)',
@@ -94,7 +94,7 @@ class App extends Component {
   }
 
   getWeatherIcon(condition){
-    var svgIconMapping = {
+    const svgIconMapping = {
       'clear-day':clearDay,
       'clear-night':clearNight,
       'rain':rain,
@@ -111,11 +111,10 @@ class App extends Component {
   }
 
   handleResponse(wholeWeatherData) {
-    console.log(wholeWeatherData);
-    var currentCondition = wholeWeatherData.currently.icon;
-    var currentWindSpeed = Math.floor(wholeWeatherData.currently.windSpeed);
-    var currentTemperature = this.convertTempToCelsius(wholeWeatherData.currently.temperature);
-    var currentWeeksweather = wholeWeatherData.daily;
+    const currentCondition = wholeWeatherData.currently.icon;
+    const currentWindSpeed = Math.floor(wholeWeatherData.currently.windSpeed);
+    const currentTemperature = this.convertTempToCelsius(wholeWeatherData.currently.temperature);
+    const currentWeeksweather = wholeWeatherData.daily;
     this.setState({
           loading:false,
           weekWeather: currentWeeksweather.data,
@@ -134,47 +133,43 @@ class App extends Component {
 
 
   render() {
-    var currentDayWeather = this.state.weekWeather;
-    var backGroundImage = this.state.backGroundImage;
-    var renderAdminState = this.state.renderAdmin;
-    var currentCity = this.state.currentCity;
-    console.log(currentDayWeather);
-    if(this.state.loading){
+    const {weekWeather,backGroundImage,renderAdmin,currentCity,loading,socket,currentCondition,currentWindSpeed,currentTemperature} = this.state;
+    const {changeViewBackTomainPage,changeCurrentCity,loadWeather,getBackGroundImage,changeViewToAdmin,getDayNameFromUnixTime,getWeatherIcon,convertTempToCelsius}= this;
+    if(loading){
       return <div class="loader"></div>
     }
-    if(renderAdminState){
+    if(renderAdmin){
       return (<AdminPage 
-                socket = {this.state.socket}
-                viewMethod = {this.changeViewBackTomainPage} 
-                changeCityMethod = {this.changeCurrentCity} 
-                loadWeather={this.loadWeather}
+                socket = {socket}
+                viewMethod = {changeViewBackTomainPage} 
+                changeCityMethod = {changeCurrentCity} 
+                loadWeather={loadWeather}
               />)
     }
     return (
-      <div className="gridContainer" style={{'backgroundImage' : this.getBackGroundImage(this.state.currentCondition)}}>
+      <div className="gridContainer" style={{'backgroundImage' : getBackGroundImage(currentCondition)}}>
         <div className="mainItem">
           <div className="topLeft">
             <h3 className = "cityHeader">{currentCity}</h3>
-            <h4 className = "weatherHeader">{this.state.currentWindSpeed + ' ms'} | {this.state.currentCondition}</h4>
+            <h4 className = "weatherHeader">{currentWindSpeed + ' ms'} | {currentCondition}</h4>
           </div>
           <div className="topRight">
-            <button className="btn" onClick={this.changeViewToAdmin}> <i className="material-icons">settings</i></button>
+            <button className="btn" onClick={changeViewToAdmin}> <i className="material-icons">settings</i></button>
           </div>
           <div className="centered">
-            <img src={this.getWeatherIcon(this.state.currentCondition)} alt= {this.state.currentCondition} className="img"/>
+            <img src={getWeatherIcon(currentCondition)} alt= {currentCondition} className="img"/>
           </div>
-          <div className="tempText">{this.state.currentTemperature + '°C'}</div>
-
-        </div>
+          <div className="tempText">{currentTemperature + '°C'}</div>
+      </div>
 
         <div className="secondaryItem">
 
           {
-            currentDayWeather.map((weekday,index) =>(
+            weekWeather.map((weekday,index) =>(
               <div className="tinyDays" key={index}>
-                <p className = "tinyDaytext">{this.getDayNameFromUnixTime(weekday.time)}</p>
-                <img src={this.getWeatherIcon(weekday.icon)} alt={weekday.icon} />
-                <p className = "tinyTempText">{this.convertTempToCelsius(weekday.temperatureMax)  + '°C'+ ' / ' + this.convertTempToCelsius(weekday.temperatureMin) + '°C'}</p>
+                <p className = "tinyDaytext">{getDayNameFromUnixTime(weekday.time)}</p>
+                <img src={getWeatherIcon(weekday.icon)} alt={weekday.icon} />
+                <p className = "tinyTempText">{convertTempToCelsius(weekday.temperatureMax)  + '°C'+ ' / ' + convertTempToCelsius(weekday.temperatureMin) + '°C'}</p>
               </div>
             ))
           }
