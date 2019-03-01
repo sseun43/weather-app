@@ -19,7 +19,7 @@ class Autocomplete extends Component {
   }
 
     loadListOfCities(value) {
-      var localAddress = "http://localhost:4001/cityList/" + value;
+      const localAddress = "http://localhost:4001/cityList/" + value;
       fetch(localAddress)
           .then((response) => {
             return response.json();
@@ -46,7 +46,7 @@ class Autocomplete extends Component {
    }
 
    loadPlaceLocation(value) {
-      var localAddress = "http://localhost:4001/getCityLocation/" + value;
+      const localAddress = "http://localhost:4001/getCityLocation/" + value;
       fetch(localAddress)
           .then((response) => {
             return response.json();

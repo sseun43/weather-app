@@ -135,9 +135,9 @@ class App extends Component {
   render() {
     const {weekWeather,backGroundImage,renderAdmin,currentCity,loading,socket,currentCondition,currentWindSpeed,currentTemperature} = this.state;
     const {changeViewBackTomainPage,changeCurrentCity,loadWeather,getBackGroundImage,changeViewToAdmin,getDayNameFromUnixTime,getWeatherIcon,convertTempToCelsius}= this;
-    if(loading){
+   /* if(loading){
       return <div class="loader"></div>
-    }
+    }*/
     if(renderAdmin){
       return (<AdminPage 
                 socket = {socket}
@@ -163,7 +163,6 @@ class App extends Component {
       </div>
 
         <div className="secondaryItem">
-
           {
             weekWeather.map((weekday,index) =>(
               <div className="tinyDays" key={index}>
@@ -172,8 +171,7 @@ class App extends Component {
                 <p className = "tinyTempText">{convertTempToCelsius(weekday.temperatureMax)  + '°C'+ ' / ' + convertTempToCelsius(weekday.temperatureMin) + '°C'}</p>
               </div>
             ))
-          }
-                    
+          }                   
         </div>
       </div>
     );
